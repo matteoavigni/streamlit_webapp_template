@@ -3,7 +3,7 @@ from auth.auth import login, authenticator
 from pages import page1, page2, page3
 
 # Pages
-st.set_page_config(page_title="App Template", layout="wide")
+st.set_page_config(page_title="App Template", layout="wide", initial_sidebar_state="collapsed")
 
 
 def homepage():
@@ -47,6 +47,17 @@ def sidebar_menu():
         st.sidebar.button("Page 3", on_click=lambda: st.session_state.update({"page": "reserved_area"}))
     else:
         st.sidebar.button("Go to Reserved Area", on_click=lambda: st.session_state.update({"page": "reserved_area"}))
+
+
+# Remove default page header
+st.markdown(
+    """
+    <style>
+        [data-testid="stSidebarNav"] { display: none; }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 
 sidebar_menu()
