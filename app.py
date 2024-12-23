@@ -35,10 +35,17 @@ def reserved_area():
 if "page" not in st.session_state:
     st.session_state["page"] = "homepage"
 
+
+# Sidebar navigation
+def sidebar_menu():
+    st.sidebar.button("Go to Homepage", on_click=lambda: st.session_state.update({"page": "homepage"}))
+    if st.session_state.get("user"):
+        st.sidebar.button("Go to Reserved Area", on_click=lambda: st.session_state.update({"page": "reserved_area"}))
+
+
+sidebar_menu()
+
 if st.session_state["page"] == "homepage":
     homepage()
 elif st.session_state["page"] == "reserved_area":
     reserved_area()
-
-st.sidebar.button("Go to Homepage", on_click=lambda: st.session_state.update({"page": "homepage"}))
-st.sidebar.button("Go to Reserved Area", on_click=lambda: st.session_state.update({"page": "reserved_area"}))
