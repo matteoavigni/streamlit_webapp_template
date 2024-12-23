@@ -41,9 +41,16 @@ def sidebar_menu():
     st.sidebar.button("Go to Homepage", on_click=lambda: st.session_state.update({"page": "homepage"}))
     if st.session_state.get("user"):
         st.sidebar.button("Go to Reserved Area", on_click=lambda: st.session_state.update({"page": "reserved_area"}))
+        st.sidebar.markdown("### Pages")
+        st.sidebar.button("Page 1", on_click=lambda: st.session_state.update({"page": "reserved_area"}))
+        st.sidebar.button("Page 2", on_click=lambda: st.session_state.update({"page": "reserved_area"}))
+        st.sidebar.button("Page 3", on_click=lambda: st.session_state.update({"page": "reserved_area"}))
+    else:
+        st.sidebar.button("Go to Reserved Area", on_click=lambda: st.session_state.update({"page": "reserved_area"}))
 
 
 sidebar_menu()
+
 
 if st.session_state["page"] == "homepage":
     homepage()
