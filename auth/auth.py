@@ -3,6 +3,10 @@ from oauthlib.oauth2 import WebApplicationClient
 import requests
 import os
 
+from dotenv import load_dotenv
+load_dotenv()
+
+
 # Initialize OAuth (example with Google OAuth)
 CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
@@ -57,6 +61,7 @@ def handle_callback():
         # Clear query parameters and refresh the app
         st.experimental_set_query_params()
         st.experimental_rerun()
+        st.error("Correctly fetched user information.")
         return True
     else:
         st.error("Failed to fetch user information.")
