@@ -2,4 +2,4 @@ streamlit
 streamlit-authenticator
 requests
 oauthlib
-dotenv
+python-dotenv
