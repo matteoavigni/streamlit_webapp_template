@@ -4,6 +4,8 @@ import requests
 import streamlit as st
 from dotenv import load_dotenv
 from google_auth_oauthlib.flow import Flow
+from oauthlib.oauth2 import LegacyApplicationClient
+from requests_oauthlib import OAuth2Session
 
 load_dotenv()
 
@@ -15,7 +17,6 @@ REDIRECT_URI = os.getenv("REDIRECT_URI")
 
 
 # OAuth 2.0 Client Configuration
-CLIENT_SECRETS_FILE = "client_secret.json"  # Ensure this file is downloaded from Google Cloud Console
 SCOPES = [
     "openid",
     "https://www.googleapis.com/auth/userinfo.email",
@@ -44,13 +45,27 @@ def credentials_to_dict(credentials):
     }
 
 
-def login_button():
-    """Start the login process by generating the Google OAuth URL."""
-    flow = Flow.from_client_secrets_file(
-        CLIENT_SECRETS_FILE,
+def create_flow():
+    """Create a Google OAuth flow using environment variables."""
+
+    return Flow.from_client_config(
+        client_config={
+            "web": {
+                "client_id": CLIENT_ID,
+                "client_secret": CLIENT_SECRET,
+                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                "token_uri": "https://oauth2.googleapis.com/token",
+                "redirect_uris": [REDIRECT_URI],
+            }
+        },
         scopes=SCOPES,
         redirect_uri=REDIRECT_URI,
     )
+
+
+def login_button():
+    """Start the login process by generating the Google OAuth URL."""
+    flow = create_flow()
     auth_url, _ = flow.authorization_url(prompt="consent")
     st.write(
         f'''
@@ -64,11 +79,7 @@ def login_button():
 
 def handle_oauth_callback():
     """Handle the OAuth callback and update session state."""
-    flow = Flow.from_client_secrets_file(
-        CLIENT_SECRETS_FILE,
-        scopes=SCOPES,
-        redirect_uri=REDIRECT_URI,
-    )
+    flow = create_flow()
 
     # Extract the authorization code from the URL
     query_params = st.query_params

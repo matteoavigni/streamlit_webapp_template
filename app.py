@@ -26,7 +26,6 @@ def reserved_area():
     else:
         user = st.session_state.user
         st.write(f"Welcome, {user['name']}!")
-        st.write(user)
 
         if 'sub_page' in st.session_state:
             if st.session_state['sub_page'] == "page1":
