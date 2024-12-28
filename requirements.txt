@@ -3,3 +3,4 @@ streamlit-authenticator
 requests
 oauthlib
 python-dotenv
+google-auth-oauthlib

@@ -1,9 +1,10 @@
-import streamlit as st
-from oauthlib.oauth2 import WebApplicationClient
-import requests
 import os
 
+import requests
+import streamlit as st
 from dotenv import load_dotenv
+from google_auth_oauthlib.flow import Flow
+
 load_dotenv()
 
 
@@ -11,68 +12,91 @@ load_dotenv()
 CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 REDIRECT_URI = os.getenv("REDIRECT_URI")
-client = WebApplicationClient(CLIENT_ID)
 
 
-def login():
-    """Generate the Google OAuth login URL and display it."""
-    authorization_endpoint = "https://accounts.google.com/o/oauth2/auth"
-    request_uri = client.prepare_request_uri(
-        authorization_endpoint,
+# OAuth 2.0 Client Configuration
+CLIENT_SECRETS_FILE = "client_secret.json"  # Ensure this file is downloaded from Google Cloud Console
+SCOPES = [
+    "openid",
+    "https://www.googleapis.com/auth/userinfo.email",
+    "https://www.googleapis.com/auth/userinfo.profile",
+]
+
+
+def get_user_info(credentials):
+    """Fetch user info using Google's API."""
+    response = requests.get(
+        "https://www.googleapis.com/oauth2/v2/userinfo",
+        headers={"Authorization": f"Bearer {credentials.token}"},
+    )
+    return response.json()
+
+
+def credentials_to_dict(credentials):
+    """Converts credentials object to a dictionary for session storage."""
+    return {
+        "token": credentials.token,
+        "refresh_token": credentials.refresh_token,
+        "token_uri": credentials.token_uri,
+        "client_id": credentials.client_id,
+        "client_secret": credentials.client_secret,
+        "scopes": credentials.scopes,
+    }
+
+
+def login_button():
+    """Start the login process by generating the Google OAuth URL."""
+    flow = Flow.from_client_secrets_file(
+        CLIENT_SECRETS_FILE,
+        scopes=SCOPES,
         redirect_uri=REDIRECT_URI,
-        scope=["openid", "email", "profile"],
     )
-    st.write(f"[Login with Google]({request_uri})")
-
-
-def handle_callback():
-    """Handle the OAuth callback to retrieve user information."""
-    # Extract the authorization code from query params
-    query_params = st.experimental_get_query_params()
-    code = query_params.get("code", [None])[0]
-
-    if not code:
-        st.error("Authorization code not found in the callback URL.")
-        return False
-
-    # Exchange authorization code for an access token
-    token_endpoint = "https://oauth2.googleapis.com/token"
-    token_url, headers, body = client.prepare_token_request(
-        token_endpoint,
-        redirect_url=REDIRECT_URI,
-        code=code,
-        client_secret=CLIENT_SECRET,
+    auth_url, _ = flow.authorization_url(prompt="consent")
+    st.write(
+        f'''
+        <a target="_self" href="{auth_url}">
+            <button>Login with Google</button>
+        </a>
+        ''',
+        unsafe_allow_html=True,
     )
-    token_response = requests.post(token_url, headers=headers, data=body)
-    client.parse_request_body_response(token_response.text)
-
-    # Retrieve user information
-    userinfo_endpoint = "https://openidconnect.googleapis.com/v1/userinfo"
-    uri, headers, body = client.add_token(userinfo_endpoint)
-    userinfo_response = requests.get(uri, headers=headers, data=body)
-
-    if userinfo_response.status_code == 200:
-        user_info = userinfo_response.json()
-        # Save user info in session state
-        st.session_state["user"] = {
-            "name": user_info.get("name"),
-            "email": user_info.get("email"),
-        }
-        # Clear query parameters and refresh the app
-        st.experimental_set_query_params()
-        st.experimental_rerun()
-        st.error("Correctly fetched user information.")
-        return True
-    else:
-        st.error("Failed to fetch user information.")
-        return False
 
 
-def authenticator():
-    """Check if the user is authenticated, and redirect to login if not."""
-    if "user" not in st.session_state:
-        if "code" in st.experimental_get_query_params():
-            handle_callback()
-        else:
-            st.warning("You must log in to access this area.")
-            login()
+def handle_oauth_callback():
+    """Handle the OAuth callback and update session state."""
+    flow = Flow.from_client_secrets_file(
+        CLIENT_SECRETS_FILE,
+        scopes=SCOPES,
+        redirect_uri=REDIRECT_URI,
+    )
+
+    # Extract the authorization code from the URL
+    query_params = st.query_params
+    if "code" in query_params:
+        code = query_params["code"]
+        try:
+            flow.fetch_token(code=code)
+            credentials = flow.credentials
+            st.session_state.credentials = credentials_to_dict(credentials)
+            st.session_state.user = get_user_info(credentials)
+
+            # Clear query parameters after successful login
+            st.query_params.clear()
+
+            # Redirect to the reserved area
+            st.session_state["page"] = "reserved_area"
+            st.success(f"Successfully logged in as {st.session_state.user['name']}!")
+
+            # Force Streamlit to rerun and navigate to the new page
+            st.rerun()
+        except Exception as e:
+            st.error(f"Login failed: {e}")
+
+
+def logout():
+    """Logout user"""
+    st.query_params.clear()
+    st.session_state.pop("user", None)
+    st.session_state.pop("sub_page", None)
+    st.session_state.update({'page': 'homepage'})
+    st.success(f"Successfully logged out!")
