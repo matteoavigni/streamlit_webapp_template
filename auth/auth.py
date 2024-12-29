@@ -109,8 +109,13 @@ def handle_oauth_callback():
 
 def logout():
     """Logout user"""
-    st.query_params.clear()
-    st.session_state.pop("user", None)
-    st.session_state.pop("sub_page", None)
-    st.session_state.update({'page': 'homepage'})
-    st.success(f"Successfully logged out!")
+    st.session_state.clear()  # Clear all session state variables
+    homepage_url = "/"  # Adjust this based on your Streamlit deployment path
+    st.markdown(
+        f"""
+        <meta http-equiv="refresh" content="0;url={homepage_url}">
+        """,
+        unsafe_allow_html=True,
+    )
+    st.success(f"Successfully logged out!")  # TODO: this is not shown
+    st.stop()  # Prevent further execution of the script

@@ -1,6 +1,6 @@
 import streamlit as st
-from auth.auth import logout, login_button, handle_oauth_callback
-from pages import page1, page2, page3
+from auth.auth import login_button, handle_oauth_callback
+from utils import sidebar_menu
 
 # Pages
 st.set_page_config(page_title="App Template", layout="wide", initial_sidebar_state="collapsed")
@@ -27,13 +27,20 @@ def reserved_area():
         user = st.session_state.user
         st.write(f"Welcome, {user['name']}!")
 
-        if 'sub_page' in st.session_state:
-            if st.session_state['sub_page'] == "page1":
-                page1.display()
-            elif st.session_state['sub_page'] == "page2":
-                page2.display()
-            elif st.session_state['sub_page'] == "page3":
-                page3.display()
+        st.markdown(
+            "Here you will find a list pages built using [Streamlit](https://streamlit.io/):", unsafe_allow_html=True
+        )
+
+        name_home = st.button("Name", key='name_home')
+        profile_picture_home = st.button("Profile Picture", key='profile_picture_home')
+        email_home = st.button("Email", key='email_home')
+
+        if name_home:
+            st.switch_page("pages/01_Name.py")
+        elif profile_picture_home:
+            st.switch_page("pages/02_Profile_Picture.py")
+        elif email_home:
+            st.switch_page("pages/03_Email.py")
 
 
 def oauth_callback():
@@ -44,32 +51,6 @@ def oauth_callback():
 # Routing
 if "page" not in st.session_state:
     st.session_state["page"] = "homepage"
-
-
-# Sidebar navigation
-def sidebar_menu():
-    st.sidebar.button("Homepage", on_click=lambda: st.session_state.update({"page": "homepage",
-                                                                            "sub_page": None}))
-    st.sidebar.button("Reserved Area", on_click=lambda: st.session_state.update({"page": "reserved_area",
-                                                                                 "sub_page": None}))
-    if st.session_state.get("user"):
-
-        st.sidebar.markdown("### Pages")
-        st.sidebar.button("Name", on_click=lambda: st.session_state.update({"sub_page": "page1"}))
-        st.sidebar.button("Profile Picture", on_click=lambda: st.session_state.update({"sub_page": "page2"}))
-        st.sidebar.button("Email", on_click=lambda: st.session_state.update({"sub_page": "page3"}))
-        st.sidebar.button("Logout", on_click=lambda: logout())
-
-
-# Remove default page header
-st.markdown(
-    """
-    <style>
-        [data-testid="stSidebarNav"] { display: none; }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
 
 
 # Detect if the callback URL is accessed
