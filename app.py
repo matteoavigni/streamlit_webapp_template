@@ -55,9 +55,9 @@ def sidebar_menu():
     if st.session_state.get("user"):
 
         st.sidebar.markdown("### Pages")
-        st.sidebar.button("Page 1", on_click=lambda: st.session_state.update({"sub_page": "page1"}))
-        st.sidebar.button("Page 2", on_click=lambda: st.session_state.update({"sub_page": "page2"}))
-        st.sidebar.button("Page 3", on_click=lambda: st.session_state.update({"sub_page": "page3"}))
+        st.sidebar.button("Name", on_click=lambda: st.session_state.update({"sub_page": "page1"}))
+        st.sidebar.button("Profile Picture", on_click=lambda: st.session_state.update({"sub_page": "page2"}))
+        st.sidebar.button("Email", on_click=lambda: st.session_state.update({"sub_page": "page3"}))
         st.sidebar.button("Logout", on_click=lambda: logout())
 
 

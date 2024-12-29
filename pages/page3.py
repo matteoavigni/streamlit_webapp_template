@@ -2,5 +2,5 @@ import streamlit as st
 
 
 def display():
-    st.title("Page 3")
-    st.write("Welcome to Page 3!")
+    st.title("Email")
+    st.write(f"Your email address is {st.session_state.user['email']}!")
