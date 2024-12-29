@@ -68,16 +68,16 @@ def login_button():
     flow = create_flow()
     auth_url, _ = flow.authorization_url(prompt="consent")
 
-    # this part is needed because google blocks redirect in iframes and I want to avoid opening a new tab
-    st.button("Login with Google", on_click=lambda: st.session_state.update({"login_click": "1"}))
-    if st.session_state.get('login_click') == '1':
-        st.write(
-            f'''
-            <meta http-equiv="refresh" content="0; url={auth_url}">
-            ''',
-            unsafe_allow_html=True,
-        )
-        st.session_state.update({'login_click': '0'})
+    st.write(
+        f'''
+        <a href="{auth_url}" target="_blank" style="text-decoration:none;">
+            <button style="padding: 10px 20px; font-size: 16px; background-color: #4285F4; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                Login with Google
+            </button>
+        </a>
+        ''',
+        unsafe_allow_html=True,
+    )
 
 
 def handle_oauth_callback():
