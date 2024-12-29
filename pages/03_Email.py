@@ -4,8 +4,6 @@ from utils import sidebar_menu
 
 
 def display():
-    st.write("DEBUG 2")
-    st.write(st.session_state)
     st.title("Email")
     st.write(f"Your email address is {st.session_state.user['email']}!")
 
