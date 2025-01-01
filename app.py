@@ -13,9 +13,9 @@ homepage = st.Page("pages/homepage.py", title="Homepage", icon="🏠")
 reserved_area = st.Page("pages/reserved_area.py", title="Reserved Area", icon=":material/dashboard:")
 
 profile_info = st.Page("pages/profile_info.py", title="Show Profile", icon="👤")
-show_name = st.Page("pages/show_name.py", title="Show Name", icon=":material/dashboard:")
-show_email = st.Page("pages/show_email.py", title="Show Email", icon=":material/dashboard:")
-show_profile_picture = st.Page("pages/show_profile_picture.py", title="Show Profile Picture", icon=":material/dashboard:")
+show_name = st.Page("pages/show_name.py", title="Show Name", icon="👉")
+show_email = st.Page("pages/show_email.py", title="Show Email", icon="✉️")
+show_profile_picture = st.Page("pages/show_profile_picture.py", title="Show Profile Picture", icon="📷")
 
 if is_logged_in():
     pg = st.navigation(

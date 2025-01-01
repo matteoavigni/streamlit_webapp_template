@@ -26,10 +26,6 @@ else:
     Hello {given_name}, here you will find a list pages built using [Streamlit](https://streamlit.io/):
     """, unsafe_allow_html=True
     )
-    if st.button('Show Email'):
-        st.switch_page('pages/show_email.py')
-    if st.button('Show Name'):
-        st.switch_page('pages/show_name.py')
-    if st.button('Show Profile Picture'):
-        st.switch_page('pages/show_profile_picture.py')
-
+    st.page_link("pages/show_name.py", label="Show Name", icon="👉")
+    st.page_link("pages/show_email.py", label="Show Email", icon="✉️")
+    st.page_link("pages/show_profile_picture.py", label="Show Profile Picture", icon="📷")
