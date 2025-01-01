@@ -3,6 +3,11 @@ import time
 import streamlit as st
 from utils import is_logged_in
 
+
+if st.session_state.get('welcome_user', False):
+    st.success(f"Successfully logged in as {st.session_state.user['name']}!")
+    st.session_state.welcome_user = False
+
 st.markdown("""
 # Reserved Area Homepage
 

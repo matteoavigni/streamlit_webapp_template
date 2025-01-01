@@ -1,5 +1,4 @@
 import streamlit as st
-from auth.auth import logout
 
 
 def is_logged_in():

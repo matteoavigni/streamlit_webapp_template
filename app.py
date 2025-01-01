@@ -1,6 +1,10 @@
 import streamlit as st
 from utils import is_logged_in
 
+if st.session_state.get('logged_out', False):
+    st.success(f"Successfully logged out!")
+    st.session_state.logged_out = False  # reset logged_out value
+
 login_page = st.Page('pages/auth/login.py', title="Log in", icon=":material/login:")
 logout_page = st.Page('pages/auth/logout.py', title="Log out", icon=":material/logout:")
 processing_login = st.Page("pages/auth/processing_login.py", title="Processing Login", icon="⏳")
@@ -21,9 +25,15 @@ if is_logged_in():
             "Account": [profile_info, logout_page],
         }
     )
+
 elif "code" in st.query_params:
     pg = st.navigation([processing_login])
 else:
     pg = st.navigation([homepage, login_page])
 
 pg.run()
+
+# check if reserved_area is in the query
+if 'reserved_area' == st.query_params.get('page'):
+    st.query_params.pop('page')  # remove the 'page' query param
+    st.switch_page(reserved_area)

@@ -5,8 +5,6 @@ import requests
 import streamlit as st
 from dotenv import load_dotenv
 from google_auth_oauthlib.flow import Flow
-from oauthlib.oauth2 import LegacyApplicationClient
-from requests_oauthlib import OAuth2Session
 
 load_dotenv()
 
@@ -94,13 +92,15 @@ def handle_oauth_callback():
             credentials = flow.credentials
             st.session_state.credentials = credentials_to_dict(credentials)
             st.session_state.user = get_user_info(credentials)
+            st.session_state.welcome_user = True
 
             # Clear query parameters after successful login
             st.query_params.clear()
 
+            # navigate to the reserved area page instead of the homepage after login
+            st.query_params.update({'page': 'reserved_area'})
+
             # Redirect to the reserved area
-            st.success(f"Successfully logged in as {st.session_state.user['name']}!")
-            sleep(0.5)
             st.rerun()
         except Exception as e:
             st.error(f"Login failed: {e}")
@@ -109,12 +109,4 @@ def handle_oauth_callback():
 def logout():
     """Logout user"""
     st.session_state.clear()  # Clear all session state variables
-    homepage_url = "/"  # Adjust this based on your Streamlit deployment path
-    st.markdown(
-        f"""
-        <meta http-equiv="refresh" content="0;url={homepage_url}">
-        """,
-        unsafe_allow_html=True,
-    )
-    st.success(f"Successfully logged out!")  # TODO: this is not shown
-    st.stop()  # Prevent further execution of the script
+    st.session_state.logged_out = True
