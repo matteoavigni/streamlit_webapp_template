@@ -1,4 +1,5 @@
 import os
+from time import sleep
 
 import requests
 import streamlit as st
@@ -98,10 +99,8 @@ def handle_oauth_callback():
             st.query_params.clear()
 
             # Redirect to the reserved area
-            st.session_state["page"] = "reserved_area"
             st.success(f"Successfully logged in as {st.session_state.user['name']}!")
-
-            # Force Streamlit to rerun and navigate to the new page
+            sleep(0.5)
             st.rerun()
         except Exception as e:
             st.error(f"Login failed: {e}")
